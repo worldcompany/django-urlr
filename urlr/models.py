@@ -46,10 +46,13 @@ class LinkShortenedItem(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
-
     shortened_url = models.CharField(max_length=128, blank=True)
 
     objects = LinkShortenedItemManager()
+
+    class Meta:
+        unique_together = ('object_id', 'content_type')
+
 
     def __unicode__(self):
         return self.shortened_url
