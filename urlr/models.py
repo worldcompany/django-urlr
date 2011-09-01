@@ -29,27 +29,22 @@ class LinkShortenedItemManager(models.Manager):
         )
 
     def get_or_create_for_object(self, obj):
-        query = {
-            'content_type': ContentType.objects.get_for_model(obj),
-            'object_id': obj.pk
-        }
-        created = False
-        try:
-            obj = self.get(**query)
-        except self.model.DoesNotExist:
-            obj = self.create(**query)
-            created = True
-        return obj, created
-
+        return self.get_or_create(
+            content_type=ContentType.objects.get_for_model(type(obj)),
+            object_id=obj.pk
+        )
 
 class LinkShortenedItem(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey('content_type', 'object_id')
-
     shortened_url = models.CharField(max_length=128, blank=True)
 
     objects = LinkShortenedItemManager()
+
+    class Meta:
+        unique_together = ('object_id', 'content_type')
+
 
     def __unicode__(self):
         return self.shortened_url
