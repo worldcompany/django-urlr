@@ -29,18 +29,10 @@ class LinkShortenedItemManager(models.Manager):
         )
 
     def get_or_create_for_object(self, obj):
-        query = {
-            'content_type': ContentType.objects.get_for_model(obj),
-            'object_id': obj.pk
-        }
-        created = False
-        try:
-            obj = self.get(**query)
-        except self.model.DoesNotExist:
-            obj = self.create(**query)
-            created = True
-        return obj, created
-
+        return self.get_or_create(
+            content_type=ContentType.objects.get_for_model(type(obj)),
+            object_id=obj.pk
+        )
 
 class LinkShortenedItem(models.Model):
     content_type = models.ForeignKey(ContentType)
