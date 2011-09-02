@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
             # Find all dupes, with possible false positives, since we're only aggregating on object_id
             links = orm.LinkShortenedItem.objects.values('content_type', 'object_id').annotate(id_count=models.Count('object_id')).filter(id_count__gt=1)
             for link in links:
-                dupes = LinkShortenedItem.objects.filter(content_type=link['content_type'], object_id=link['object_id'])
+                dupes = orm.LinkShortenedItem.objects.filter(content_type=link['content_type'], object_id=link['object_id'])
                 for dupe in dupes[1:]:
                     dupe.delete()
 
